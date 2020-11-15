@@ -11,6 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/AdrianKubica/go-httpclient/core"
+	"github.com/AdrianKubica/go-httpclient/gohttp_mock"
 	"github.com/AdrianKubica/go-httpclient/gomime"
 )
 
@@ -20,7 +22,7 @@ const (
 	defaultConnectionTimeout  = 1 * time.Second
 )
 
-func (c *httpClient) do(method string, url string, header http.Header, body interface{}) (*Response, error) {
+func (c *httpClient) do(method string, url string, header http.Header, body interface{}) (*core.Response, error) {
 	h := c.getRequestHeader(header)
 
 	b, err := c.getRequestBody(h.Get("Content-Type"), body)
@@ -28,7 +30,7 @@ func (c *httpClient) do(method string, url string, header http.Header, body inte
 		return nil, err
 	}
 
-	if mock := mockupServer.getMock(method, url, string(b)); mock != nil {
+	if mock := gohttp_mock.GetMock(method, url, string(b)); mock != nil {
 		return mock.GetResponse()
 	}
 
@@ -52,11 +54,11 @@ func (c *httpClient) do(method string, url string, header http.Header, body inte
 		return nil, err
 	}
 
-	resFinal := Response{
-		status:     res.Status,
-		statusCode: res.StatusCode,
-		header:     res.Header,
-		body:       resBody,
+	resFinal := core.Response{
+		Status:     res.Status,
+		StatusCode: res.StatusCode,
+		Headers:    res.Header,
+		Body:       resBody,
 	}
 	return &resFinal, nil
 }
