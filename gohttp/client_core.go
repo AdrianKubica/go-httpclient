@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/AdrianKubica/go-httpclient/gomime"
 )
 
 const (
@@ -61,6 +63,10 @@ func (c *httpClient) do(method string, url string, header http.Header, body inte
 
 func (c *httpClient) getHttpClient() *http.Client {
 	c.clientOnce.Do(func() {
+		if c.builder.client != nil {
+			c.client = c.builder.client
+			return
+		}
 		c.client = &http.Client{
 			Timeout: c.getConnectionTimeout() + c.getResponseTimeout(),
 			// Transport property of http.Client is RoundTripper which is an interface so we need a pointer
@@ -106,34 +112,15 @@ func (c *httpClient) getConnectionTimeout() time.Duration {
 	return defaultConnectionTimeout
 }
 
-func (c *httpClient) getRequestHeader(header http.Header) http.Header {
-	h := make(http.Header)
-
-	// Add common headers to the request
-	for k, v := range c.builder.header {
-		if len(v) > 0 {
-			h.Set(k, v[0])
-		}
-	}
-
-	// Add custom headers to the request
-	for k, v := range header {
-		if len(v) > 0 {
-			h.Set(k, v[0])
-		}
-	}
-	return h
-}
-
 func (c *httpClient) getRequestBody(contentType string, body interface{}) ([]byte, error) {
 	if body == nil {
 		return nil, nil
 	}
 
 	switch strings.ToLower(contentType) {
-	case "application/json":
+	case gomime.ContentTypeJson:
 		return json.Marshal(body)
-	case "application/xml":
+	case gomime.ContentTypeXML:
 		return xml.Marshal(body)
 	default:
 		return json.Marshal(body)

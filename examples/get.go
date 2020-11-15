@@ -1,6 +1,8 @@
 package examples
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Endpoints struct {
 	CurrentUserUrl    string `json:"current_user_url"`
@@ -9,7 +11,7 @@ type Endpoints struct {
 }
 
 func GetEndpoints() (*Endpoints, error) {
-	res, err := httpClient.Get("https://api.github.com", nil)
+	res, err := httpClient.Get("https://api.github.com")
 	if err != nil {
 		// Deal with the error as you need
 		return nil, err
@@ -23,7 +25,6 @@ func GetEndpoints() (*Endpoints, error) {
 		// Deal with unmarshal error as you need
 		return nil, err
 	}
-
 	fmt.Println(fmt.Sprintf("Repository URL: %s", endpoints.RepositoryUrl))
 	return &endpoints, err
 }
