@@ -1,8 +1,10 @@
-package gohttp
+package gohttp_mock
 
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/AdrianKubica/go-httpclient/core"
 )
 
 // Mock provides a way to configure HTTP mocks based on combination
@@ -18,15 +20,15 @@ type Mock struct {
 }
 
 // GetResponse returns a Response struct based on the mock configuration
-func (m *Mock) GetResponse() (*Response, error) {
+func (m *Mock) GetResponse() (*core.Response, error) {
 	if m.Error != nil {
 		return nil, m.Error
 	}
 
-	res := Response{
-		status:     fmt.Sprintf("%d %s", m.ResponseStatusCode, http.StatusText(m.ResponseStatusCode)),
-		statusCode: m.ResponseStatusCode,
-		body:       []byte(m.ResponseBody),
+	res := core.Response{
+		Status:     fmt.Sprintf("%d %s", m.ResponseStatusCode, http.StatusText(m.ResponseStatusCode)),
+		StatusCode: m.ResponseStatusCode,
+		Body:       []byte(m.ResponseBody),
 	}
 	return &res, nil
 }

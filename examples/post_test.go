@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/AdrianKubica/go-httpclient/gohttp"
+	"github.com/AdrianKubica/go-httpclient/gohttp_mock"
 )
 
 func TestCreateRepo(t *testing.T) {
 	t.Run("error is returned for timeout", func(t *testing.T) {
-		gohttp.FlushMocks()
-		gohttp.AddMock(gohttp.Mock{
+		gohttp_mock.DeleteMocks()
+		gohttp_mock.AddMock(gohttp_mock.Mock{
 			Method:      http.MethodPost,
 			Url:         "https://api.github.com/user/repos",
 			RequestBody: `{"name":"test-repo","private":true}`,
@@ -40,8 +40,8 @@ func TestCreateRepo(t *testing.T) {
 	})
 
 	t.Run("repository is properly created", func(t *testing.T) {
-		gohttp.FlushMocks()
-		gohttp.AddMock(gohttp.Mock{
+		gohttp_mock.DeleteMocks()
+		gohttp_mock.AddMock(gohttp_mock.Mock{
 			Method:      http.MethodPost,
 			Url:         "https://api.github.com/user/repos",
 			RequestBody: `{"name":"test-repo","private":true}`,
