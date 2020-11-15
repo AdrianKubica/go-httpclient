@@ -30,10 +30,6 @@ func (c *httpClient) do(method string, url string, header http.Header, body inte
 		return nil, err
 	}
 
-	if mock := gohttp_mock.GetMock(method, url, string(b)); mock != nil {
-		return mock.GetResponse()
-	}
-
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(b))
 	if err != nil {
 		return nil, errors.New("unable to create a new request")
@@ -41,9 +37,7 @@ func (c *httpClient) do(method string, url string, header http.Header, body inte
 
 	req.Header = h
 
-	client := c.getHttpClient()
-
-	res, err := client.Do(req)
+	res, err := c.getHttpClient().Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +57,10 @@ func (c *httpClient) do(method string, url string, header http.Header, body inte
 	return &resFinal, nil
 }
 
-func (c *httpClient) getHttpClient() *http.Client {
+func (c *httpClient) getHttpClient() core.HttpClient {
+	if gohttp_mock.MockupServer.IsEnabled() {
+		return gohttp_mock.MockupServer.GetMockedClient()
+	}
 	c.clientOnce.Do(func() {
 		if c.builder.client != nil {
 			c.client = c.builder.client
